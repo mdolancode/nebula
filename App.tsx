@@ -1,118 +1,56 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState } from 'react';
+import { SafeAreaView, View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
+// Define the type for a task list
+type Task = {
+  id: string;
   title: string;
-}>;
+};
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const App: React.FC = () => {
+  const [tasks, setTasks] = useState<Task[]> ([
+    { id: '1', title: 'Learn React Native' },
+     { id: '2', title: 'Build a To-Do App'},
+    ]);
+const [taskTitle, setTaskTitle] = useState<string>('');
 
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const addTask = () => {
+  if (taskTitle.trim() !== '') {
+    setTasks((prevTasks) => [
+      ...prevTasks,
+    { id: Date.now().toString(), title: taskTitle },
+  ]);
+  setTaskTitle('');
+  }
+};
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
+return (
+<SafeAreaView style={styles.container}>
+  <Text style={styles.header}>Task List</Text>
+  <FlatList
+  data={tasks}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => <Text style={styles.task}>{item.title}</Text>}
+  />
+  <TextInput
+  style={styles.input}
+  placeholder="Add new task"
+  value={taskTitle}
+  onChangeText={setTaskTitle}
+  />
+  <Button title="Add Task" onPress={addTask} />
+</SafeAreaView>
+);
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+  container: { flex: 1, padding: 20, backgroundColor: '#f8f8f8'},
+  header: { fontSize: 24, fontWeight: 'bold', marginTop: 10, marginBottom: 10, marginLeft: 20 },
+  task: { padding: 10, fontSize: 18, borderBottomWidth: 1, borderBottomColor: '#ddd' },
+  input: { height: 40, borderColor: '#ccc', borderWidth: 1, marginBottom: 10, paddingHorizontal: 8 },
 });
 
 export default App;
+
+
+
