@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
 
 // Define the type for a task list
@@ -8,18 +8,29 @@ type Task = {
 };
 
 const App: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]> ([
-    { id: '1', title: 'Learn React Native' },
-     { id: '2', title: 'Build a To-Do App'},
-    ]);
-const [taskTitle, setTaskTitle] = useState<string>('');
+  const [tasks, setTasks] = useState<Task[]> ([]);
+  const [taskTitle, setTaskTitle] = useState<string>('');
 
+  // Fetch tasks from the backend
+  useEffect(() => {
+    fetch('http://localhost:3000/tasks')
+    .then((response) => response.json())
+    .then((data: Task[]) => setTasks(data))
+    .catch((error) => console.error('Error fetching tasks:', error));
+  }, []);
+
+  // Add a new task
 const addTask = () => {
   if (taskTitle.trim() !== '') {
-    setTasks((prevTasks) => [
-      ...prevTasks,
-    { id: Date.now().toString(), title: taskTitle },
-  ]);
+    fetch('http://localhost:3000/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: taskTitle }),
+    })
+    .then((response) => response.json())
+    .then((newTask: Task) => setTasks((prev) => [...prev, newTask]))
+    .catch((error) => console.error('Error adding task:', error));
+
   setTaskTitle('');
   }
 };
