@@ -33,7 +33,7 @@ app.delete('/tasks/:id', (req: Request, res: Response) => {
 
 app.patch('/tasks/:id', (req: Request, res: Response) => {
     const { id } = req.params;
-    const task = tasks.find((task) => task.id ===id);
+    const task = tasks.find((task) => task.id === id);
 
     if (task) {
         task.completed = !task.completed; // Toggle completed status
