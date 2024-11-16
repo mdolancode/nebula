@@ -71,7 +71,6 @@ const styles = StyleSheet.create({
   task: { padding: 10, fontSize: 18, borderBottomWidth: 1, borderBottomColor: '#ddd' },
   input: { height: 40, borderColor: '#ccc', borderWidth: 1, marginBottom: 10, paddingHorizontal: 8 },
   taskContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10, borderBottomWidth: 1, borderBottomColor: '#ddd' },
-  task: { fontSize: 18,}
 });
 
 export default App;
