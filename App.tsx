@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
 
 // Define the type for a task list
 type Task = {
   id: string;
   title: string;
+  completed: boolean;
 };
 
 const App: React.FC = () => {
@@ -36,9 +38,20 @@ const addTask = () => {
 };
 
 const deleteTask = (id: string) => {
-  fetch('http://localhost:3000/tasks/${id', { method: 'DELETE'})
+  fetch('http://localhost:3000/tasks/${id}', { method: 'DELETE'})
   .then(() => setTasks((prev) => prev.filter((task) => task.id !== id)))
   .catch((error) => console.error('Error deleting task:', error))
+};
+
+const toggleTaskCompletion = (id: string) => {
+  fetch('http://localhost:3000/tasks/${id}', { method: 'PATCH'})
+  .then((response) => response.json())
+  .then((updatedTask: Task) => {
+    setTasks((prev) => 
+    prev.map((task) => updatedTask.id ? updatedTask : task)
+    );
+  })
+  .catch((error) => console.error('Error toggling task completion:', error));
 };
 
 return (
@@ -49,6 +62,10 @@ return (
   keyExtractor={(item) => item.id}
   renderItem={({ item }) => (
     <View style={styles.taskContainer}>
+      <CheckBox
+        value={item.completed}
+        onValueChange={() => toggleTaskCompletion(item.id)}
+      />
     <Text style={styles.task}>{item.title}</Text>
     <Button title="Delete" onPress={() => deleteTask(item.id)} />
     </View>
@@ -71,6 +88,7 @@ const styles = StyleSheet.create({
   task: { padding: 10, fontSize: 18, borderBottomWidth: 1, borderBottomColor: '#ddd' },
   input: { height: 40, borderColor: '#ccc', borderWidth: 1, marginBottom: 10, paddingHorizontal: 8 },
   taskContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10, borderBottomWidth: 1, borderBottomColor: '#ddd' },
+  completedTask: { textDecorationLine: 'line-through', color: 'gray' },
 });
 
 export default App;
