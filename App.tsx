@@ -35,14 +35,25 @@ const addTask = () => {
   }
 };
 
+const deleteTask = (id: string) => {
+  fetch('http://localhost:3000/tasks/${id', { method: 'DELETE'})
+  .then(() => setTasks((prev) => prev.filter((task) => task.id !== id)))
+  .catch((error) => console.error('Error deleting task:', error))
+};
+
 return (
 <SafeAreaView style={styles.container}>
   <Text style={styles.header}>Task List</Text>
   <FlatList
   data={tasks}
   keyExtractor={(item) => item.id}
-  renderItem={({ item }) => <Text style={styles.task}>{item.title}</Text>}
-  />
+  renderItem={({ item }) => (
+    <View style={styles.taskContainer}>
+    <Text style={styles.task}>{item.title}</Text>
+    <Button title="Delete" onPress={() => deleteTask(item.id)} />
+    </View>
+)}
+/>
   <TextInput
   style={styles.input}
   placeholder="Add new task"
@@ -59,6 +70,8 @@ const styles = StyleSheet.create({
   header: { fontSize: 24, fontWeight: 'bold', marginTop: 10, marginBottom: 10, marginLeft: 20 },
   task: { padding: 10, fontSize: 18, borderBottomWidth: 1, borderBottomColor: '#ddd' },
   input: { height: 40, borderColor: '#ccc', borderWidth: 1, marginBottom: 10, paddingHorizontal: 8 },
+  taskContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10, borderBottomWidth: 1, borderBottomColor: '#ddd' },
+  task: { fontSize: 18,}
 });
 
 export default App;
