@@ -37,7 +37,7 @@ useEffect(() => {
 }, [selectedTaskId]);
 
 const sortTasks = (tasks: Task[]): Task[] => {
-  return [...tasks].sort((a, b) => Number(a.completed) - Number(b.completed));
+  return tasks.sort((a, b) => Number(a.completed) - Number(b.completed));
 }
 
 const validateAndAddTask = () => {
@@ -55,11 +55,11 @@ const addTask = () => {
     fetch('http://localhost:3000/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: taskTitle }),
+      body: JSON.stringify({ title: taskTitle, completed: false }),
     })
     .then((response) => response.json())
     .then((newTask: Task) => { 
-      setTasks((prev) => sortTasks([...prev, newTask]));
+      setTasks((prev) => [...prev, newTask]);
       setTaskTitle('');
       setModalVisible(false); // Close modal
   })
@@ -73,10 +73,7 @@ const deleteTask = (id: string) => {
   }
   fetch(`http://localhost:3000/tasks/${id}`, { method: 'DELETE'})
   .then(() => {
-    setTasks((prev) => {
-      const updatedTasks = sortTasks(prev.filter((task) => task.id !== id));
-      return [...updatedTasks]; // New reference ensures re-render
-    });
+    setTasks((prev) => prev.filter((task) => task.id !== id));
   })
   .catch((error) => console.error('Error deleting task:', error))
 };
@@ -85,14 +82,11 @@ const toggleTaskCompletion = (id: string) => {
   fetch(`http://localhost:3000/tasks/${id}`, { method: 'PATCH'})
   .then((response) => response.json())
   .then((updatedTask: Task) => {
-    setTasks((prev) => {
-      const updatedTasks = sortTasks(
-        prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
-    );
-    return [...updatedTasks]; // Ensure a new reference for proper re-render
-});
-  })
-  .catch((error) => console.error('Error toggling task completion:', error));
+    setTasks((prev) => prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+  );
+})
+  .catch((error) => 
+    console.error('Error toggling task completion:', error));
 };
 
 const selectRandomTask = () => {
@@ -116,8 +110,8 @@ return (
     {/* Task List */}
     <SwipeListView
       ref={swipeListRef}
-      data={tasks}
-      keyExtractor={(item, index) => item.id + '-' + index}
+      data={tasks.slice().sort((a, b) => Number(a.completed) - Number(b.completed))}
+      keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <View style={[
           styles.taskContainer, 
