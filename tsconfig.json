@@ -1,3 +1,15 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json"
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "compilerOptions": {
+    // "strict": true,                      // Enable all strict type-checking options
+    // "skipLibCheck": true,                // Skip type checks for library files
+    // "esModuleInterop": true,             // Ensure proper handling of ES modules
+    // "allowSyntheticDefaultImports": true // Allow default imports from modules with no default export
+  },
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js"
+  ]
 }

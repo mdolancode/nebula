@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, View, Text, TextInput, Button, FlatList, StyleSheet, Alert } from 'react-native';
+import { SafeAreaView, View, Text, TextInput, Button, FlatList, StyleSheet, Alert, Image } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CheckBox from '@react-native-community/checkbox';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -98,7 +98,6 @@ return (
         <CheckBox
           value={item.completed}
           onValueChange={() => toggleTaskCompletion(item.id)}
-          style={styles.checkedTask}
         />
       <Text style={[
         styles.task,
@@ -122,14 +121,23 @@ return (
   rightOpenValue={-75}
   disableRightSwipe={true}
 />
-    <TextInput
+<TextInput
     style={styles.input}
     placeholder="Add new task"
     value={taskTitle}
     onChangeText={setTaskTitle}
     />
-    <Button title="Add Task" onPress={addTask} />
-    <Button title="Pick Random Task" onPress={selectRandomTask} />
+<View style={styles.floatingButtons}>
+  {/* Add Task Button */}
+  <TouchableOpacity style={styles.fab} onPress={addTask}>
+    <Image source={require('./assets/icons/add-light.png')} style={styles.icon} /> 
+  </TouchableOpacity>
+
+  {/* Pick Random Task Button */}
+  <TouchableOpacity style={[styles.fab, styles.randomButton]} onPress={selectRandomTask}>
+    <Image source={require('./assets/icons/random-light.png')} style={styles.icon} />
+  </TouchableOpacity>
+</View>
   </SafeAreaView>
 </GestureHandlerRootView>
 );
@@ -207,6 +215,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: '100%',
     width: 75,
+  },
+  floatingButtons: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+  },
+  fab: {
+    backgroundColor: 'transparent',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15, // Space between buttons
+  },
+  randomButton: {
+    backgroundColor: 'transparent',
+  },
+  icon: {
+    width: 60,
+    height: 60,
   },
 });
 

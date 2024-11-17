@@ -11,21 +11,24 @@
   },
   "dependencies": {
     "@react-native-community/checkbox": "^0.5.17",
+    "@react-native-community/cli": "^10.2.2",
+    "@react-native/assets-registry": "^0.76.2",
     "react": "18.2.0",
     "react-native": "0.71.7",
     "react-native-gesture-handler": "^2.21.0",
     "react-native-reanimated": "^3.16.1",
-    "react-native-swipe-list-view": "^3.2.9"
+    "react-native-swipe-list-view": "^3.2.9",
+    "react-native-vector-icons": "^10.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
-    "@react-native-community/cli": "latest",
     "@react-native-community/eslint-config": "^3.2.0",
     "@tsconfig/react-native": "^2.0.2",
     "@types/jest": "^29.2.1",
     "@types/react": "^18.0.24",
+    "@types/react-native-vector-icons": "^6.4.18",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.2.1",
     "eslint": "^8.19.0",
@@ -33,7 +36,7 @@
     "metro-react-native-babel-preset": "0.73.9",
     "prettier": "^2.4.1",
     "react-test-renderer": "18.2.0",
-    "typescript": "4.8.4"
+    "typescript": "^4.8.4"
   },
   "jest": {
     "preset": "react-native"
