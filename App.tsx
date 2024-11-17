@@ -64,7 +64,12 @@ const deleteTask = (id: string) => {
     swipeListRef.current.closeAllOpenRows();
   }
   fetch(`http://localhost:3000/tasks/${id}`, { method: 'DELETE'})
-  .then(() => setTasks((prev) => sortTasks(prev.filter((task) => task.id !== id))))
+  .then(() => {
+    setTasks((prev) => {
+      const updatedTasks = sortTasks(prev.filter((task) => task.id !== id));
+      return [...updatedTasks]; // New reference ensures re-render
+    });
+  })
   .catch((error) => console.error('Error deleting task:', error))
 };
 
@@ -72,7 +77,12 @@ const toggleTaskCompletion = (id: string) => {
   fetch(`http://localhost:3000/tasks/${id}`, { method: 'PATCH'})
   .then((response) => response.json())
   .then((updatedTask: Task) => {
-    setTasks((prev) => sortTasks(prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))));
+    setTasks((prev) => {
+      const updatedTasks = sortTasks(
+        prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+    );
+    return [...updatedTasks]; // Ensure a new reference for proper re-render
+});
   })
   .catch((error) => console.error('Error toggling task completion:', error));
 };
@@ -99,7 +109,7 @@ return (
     <SwipeListView
       ref={swipeListRef}
       data={tasks}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item, index) => item.id + '-' + index}
       renderItem={({ item }) => (
         <View style={[
           styles.taskContainer, 
