@@ -34,6 +34,10 @@ useEffect(() => {
   }
 }, [selectedTaskId]);
 
+const sortTasks = (tasks: Task[]): Task[] => {
+  return [...tasks].sort((a, b) => Number(a.completed) - Number(b.completed));
+}
+
   // Add a new task
 const addTask = () => {
   if (taskTitle.trim() !== '') {
@@ -43,7 +47,7 @@ const addTask = () => {
       body: JSON.stringify({ title: taskTitle }),
     })
     .then((response) => response.json())
-    .then((newTask: Task) => setTasks((prev) => [...prev, newTask]))
+    .then((newTask: Task) => setTasks((prev) => sortTasks([...prev, newTask])))
     .catch((error) => console.error('Error adding task:', error));
 
   setTaskTitle('');
@@ -52,7 +56,7 @@ const addTask = () => {
 // Delete a Task
 const deleteTask = (id: string) => {
   fetch(`http://localhost:3000/tasks/${id}`, { method: 'DELETE'})
-  .then(() => setTasks((prev) => prev.filter((task) => task.id !== id)))
+  .then(() => setTasks((prev) => sortTasks(prev.filter((task) => task.id !== id))))
   .catch((error) => console.error('Error deleting task:', error))
 };
 
@@ -60,9 +64,7 @@ const toggleTaskCompletion = (id: string) => {
   fetch(`http://localhost:3000/tasks/${id}`, { method: 'PATCH'})
   .then((response) => response.json())
   .then((updatedTask: Task) => {
-    setTasks((prev) => 
-    prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
-    );
+    setTasks((prev) => sortTasks(prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))));
   })
   .catch((error) => console.error('Error toggling task completion:', error));
 };
