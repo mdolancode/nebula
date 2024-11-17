@@ -40,9 +40,18 @@ const sortTasks = (tasks: Task[]): Task[] => {
   return [...tasks].sort((a, b) => Number(a.completed) - Number(b.completed));
 }
 
+const validateAndAddTask = () => {
+  if (taskTitle.trim() === '') {
+    Alert.alert('Input Error', 'Task title cannot be empty.'); // Alert for empty input
+    return;
+  }
+  addTask();
+};
+
   // Add a new task
 const addTask = () => {
-  if (taskTitle.trim() !== '') {
+
+
     fetch('http://localhost:3000/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -55,7 +64,6 @@ const addTask = () => {
       setModalVisible(false); // Close modal
   })
     .catch((error: Error) => console.error('Error adding task:', error));
-  }
 };
 // Delete a Task
 const deleteTask = (id: string) => {
@@ -168,7 +176,7 @@ return (
         value={taskTitle}
         onChangeText={setTaskTitle}
       />
-      <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={addTask}>
+      <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={validateAndAddTask}>
         <Text style={styles.saveButtonText}>Save Task</Text>
       </TouchableOpacity>
 
