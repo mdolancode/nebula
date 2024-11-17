@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { SafeAreaView, View, Text, TextInput, Button, FlatList, StyleSheet, Alert, Image, Modal } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CheckBox from '@react-native-community/checkbox';
@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const [taskTitle, setTaskTitle] = useState<string>('');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false); // For modal visibility
+  const swipeListRef = useRef<SwipeListView<Task>>(null); // Add this ref to the SwipeListView component
 
   // Fetch tasks from the backend
   useEffect(() => {
@@ -54,11 +55,14 @@ const addTask = () => {
       setModalVisible(false); // Close modal
   })
     .catch((error: Error) => console.error('Error adding task:', error));
-   
   }
 };
 // Delete a Task
 const deleteTask = (id: string) => {
+  // Close all open rows before making the delete request
+  if (swipeListRef.current) {
+    swipeListRef.current.closeAllOpenRows();
+  }
   fetch(`http://localhost:3000/tasks/${id}`, { method: 'DELETE'})
   .then(() => setTasks((prev) => sortTasks(prev.filter((task) => task.id !== id))))
   .catch((error) => console.error('Error deleting task:', error))
@@ -93,6 +97,7 @@ return (
 <View style={styles.taskListContainer}>
     {/* Task List */}
     <SwipeListView
+      ref={swipeListRef}
       data={tasks}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
