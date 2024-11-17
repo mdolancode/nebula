@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, View, Text, TextInput, Button, FlatList, StyleSheet, Alert, Image } from 'react-native';
+import { SafeAreaView, View, Text, TextInput, Button, FlatList, StyleSheet, Alert, Image, Modal } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CheckBox from '@react-native-community/checkbox';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]> ([]);
   const [taskTitle, setTaskTitle] = useState<string>('');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState<boolean>(false); // For modal visibility
 
   // Fetch tasks from the backend
   useEffect(() => {
@@ -47,10 +48,13 @@ const addTask = () => {
       body: JSON.stringify({ title: taskTitle }),
     })
     .then((response) => response.json())
-    .then((newTask: Task) => setTasks((prev) => sortTasks([...prev, newTask])))
-    .catch((error) => console.error('Error adding task:', error));
-
-  setTaskTitle('');
+    .then((newTask: Task) => { 
+      setTasks((prev) => sortTasks([...prev, newTask]));
+      setTaskTitle('');
+      setModalVisible(false); // Close modal
+  })
+    .catch((error: Error) => console.error('Error adding task:', error));
+   
   }
 };
 // Delete a Task
@@ -86,6 +90,8 @@ return (
 <GestureHandlerRootView>
   <SafeAreaView style={styles.container}>
     <Text style={styles.header}>Task List</Text>
+
+    {/* Task List */}
     <SwipeListView
       data={tasks}
       keyExtractor={(item) => item.id}
@@ -94,7 +100,7 @@ return (
           styles.taskContainer, 
           item.id === selectedTaskId && styles.selectedTaskContainer]}
         >
-
+        {/* Checkbox */}
         <CheckBox
           value={item.completed}
           onValueChange={() => toggleTaskCompletion(item.id)}
@@ -121,23 +127,40 @@ return (
   rightOpenValue={-75}
   disableRightSwipe={true}
 />
-<TextInput
-    style={styles.input}
-    placeholder="Add new task"
-    value={taskTitle}
-    onChangeText={setTaskTitle}
-    />
+  {/* Floating Buttons */}  
 <View style={styles.floatingButtons}>
   {/* Add Task Button */}
-  <TouchableOpacity style={styles.fab} onPress={addTask}>
+  <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
     <Image source={require('./assets/icons/add-light.png')} style={styles.icon} /> 
   </TouchableOpacity>
 
-  {/* Pick Random Task Button */}
+  {/* Random Task Button */}
   <TouchableOpacity style={[styles.fab, styles.randomButton]} onPress={selectRandomTask}>
     <Image source={require('./assets/icons/random-light.png')} style={styles.icon} />
   </TouchableOpacity>
 </View>
+  {/* Modal for Adding Tasks*/}
+<Modal visible={modalVisible} animationType="slide" transparent={true}>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>Add New Task</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Task Title"
+        value={taskTitle}
+        onChangeText={setTaskTitle}
+      />
+      <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={addTask}>
+        <Text style={styles.saveButtonText}>Save Task</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={() => setModalVisible(false)}>
+        <Text style={styles.cancelButtonText}>Cancel</Text>
+      </TouchableOpacity>
+
+</View>
+</View>
+</Modal>
   </SafeAreaView>
 </GestureHandlerRootView>
 );
@@ -162,13 +185,6 @@ const styles = StyleSheet.create({
     fontSize: 18, 
     borderBottomWidth: 1, 
     borderBottomColor: '#ddd',
-  },
-  input: { 
-    height: 40, 
-    borderColor: '#ccc', 
-    borderWidth: 1, 
-    marginBottom: 10, 
-    paddingHorizontal: 8, 
   },
   taskContainer: { 
     flexDirection: 'row', 
@@ -237,6 +253,78 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi transparent background
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  input: {
+    width: '100%',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  button: {
+    width: '100%',
+    paddingVertical: 10, // Consistent vertical padding
+    paddingHorizontal: 20, // Base horizontal padding
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  saveButton: {
+    backgroundColor: '#28a745', // Green
+    minWidth: 120, // Ensures buttons are at least this wide
+    paddingHorizontal: 20, // Extra padding for visual balance
+  },
+  cancelButton: {
+    backgroundColor: '#dc3545', // Red
+    minWidth: 120, // Ensures buttons are at least this wide
+    paddingHorizontal: 30, // Extra padding for visual balance
+  },
+  saveButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  cancelButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  // saveButton: {
+  //   backgroundColor: '#28a745',
+  //   padding: 10,
+  //   borderRadius: 5,
+  //   marginTop: 10,
+  // },
+  // saveButtonText: {
+  //   color: 'white',
+  //   fontWeight: 'bold',
+  // },
+  // cancelButton: {
+  //   backgroundColor: '#dc3545',
+  //   padding: 10,
+  //   borderRadius: 5,
+  //   marginTop: 10,
+  // },
+  // cancelButtonText: {
+  //   color: 'white',
+  //   fontWeight: 'bold',
+  // },
 });
 
 export default App;
