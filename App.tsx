@@ -1,6 +1,10 @@
+import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, TextInput, Button, FlatList, StyleSheet, Alert } from 'react-native';
+import { SwipeListView } from 'react-native-swipe-list-view';
 import CheckBox from '@react-native-community/checkbox';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 // Define the type for a task list
 type Task = {
@@ -45,7 +49,7 @@ const addTask = () => {
   setTaskTitle('');
   }
 };
-
+// Delete a Task
 const deleteTask = (id: string) => {
   fetch(`http://localhost:3000/tasks/${id}`, { method: 'DELETE'})
   .then(() => setTasks((prev) => prev.filter((task) => task.id !== id)))
@@ -77,40 +81,55 @@ const selectRandomTask = () => {
 };
 
 return (
-<SafeAreaView style={styles.container}>
-  <Text style={styles.header}>Task List</Text>
-  <FlatList
-  data={tasks}
-  keyExtractor={(item) => item.id}
-  renderItem={({ item }) => (
-    <View style={[
-      styles.taskContainer, 
-      item.id === selectedTaskId && styles.selectedTaskContainer]}
+<GestureHandlerRootView>
+  <SafeAreaView style={styles.container}>
+    <Text style={styles.header}>Task List</Text>
+    <SwipeListView
+      data={tasks}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <View style={[
+          styles.taskContainer, 
+          item.id === selectedTaskId && styles.selectedTaskContainer]}
+        >
+
+        <CheckBox
+          value={item.completed}
+          onValueChange={() => toggleTaskCompletion(item.id)}
+          style={styles.checkedTask}
+        />
+      <Text style={[
+        styles.task,
+      item.completed && styles.completedTask,
+      item.id === selectedTaskId && styles.selectedTaskText,
+    ]}
     >
-      <CheckBox
-        value={item.completed}
-        onValueChange={() => toggleTaskCompletion(item.id)}
-      />
-    <Text style={[
-      styles.task,
-    item.completed && styles.completedTask,
-    item.id === selectedTaskId && styles.selectedTaskText,
-  ]}
-  >
-    {item.title}</Text>
-    <Button title="Delete" onPress={() => deleteTask(item.id)} />
+        {item.title}
+      </Text>
     </View>
-)}
+  )}
+  renderHiddenItem={({ item }) => ( 
+    <TouchableOpacity
+    style={styles.hiddenContainer}
+    onPress={() => deleteTask(item.id)}
+    >
+      <Text style={styles.deleteButtonText}>Delete</Text>
+    </TouchableOpacity>
+
+  )}
+  rightOpenValue={-75}
+  disableRightSwipe={true}
 />
-  <TextInput
-  style={styles.input}
-  placeholder="Add new task"
-  value={taskTitle}
-  onChangeText={setTaskTitle}
-  />
-  <Button title="Add Task" onPress={addTask} />
-  <Button title="Pick Random Task" onPress={selectRandomTask} />
-</SafeAreaView>
+    <TextInput
+    style={styles.input}
+    placeholder="Add new task"
+    value={taskTitle}
+    onChangeText={setTaskTitle}
+    />
+    <Button title="Add Task" onPress={addTask} />
+    <Button title="Pick Random Task" onPress={selectRandomTask} />
+  </SafeAreaView>
+</GestureHandlerRootView>
 );
 };
 
@@ -118,34 +137,43 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     padding: 20, 
-    backgroundColor: '#f8f8f8'},
+    backgroundColor: '#f8f8f8',
+  },
   header: { 
     fontSize: 24, 
     fontWeight: 'bold', 
     marginTop: 10, 
     marginBottom: 10, 
-    marginLeft: 20 },
+    marginLeft: 20, 
+  },
   task: { 
+    flex: 1,
     padding: 10, 
     fontSize: 18, 
     borderBottomWidth: 1, 
-    borderBottomColor: '#ddd' },
+    borderBottomColor: '#ddd',
+  },
   input: { 
     height: 40, 
     borderColor: '#ccc', 
     borderWidth: 1, 
     marginBottom: 10, 
-    paddingHorizontal: 8 },
+    paddingHorizontal: 8, 
+  },
   taskContainer: { 
     flexDirection: 'row', 
     justifyContent: 'space-between', 
     alignItems: 'center', 
-    padding: 10, 
+    paddingVertical: 10, // Adds consistent vertical padding
+    paddingHorizontal: 15, // Adds consistent horizontal padding
     borderBottomWidth: 1, 
-    borderBottomColor: '#ddd' },
+    borderBottomColor: '#ddd', 
+    backgroundColor: 'white', // Ensures tasks have a white background
+  },
   completedTask: { 
     textDecorationLine: 'line-through', 
-    color: 'gray' },
+    color: 'gray' 
+  },
   selectedTaskContainer: { 
     backgroundColor: '#d3f9d8', // light green background color 
     borderColor: '#28a745', // Green border 
@@ -154,8 +182,30 @@ const styles = StyleSheet.create({
   selectedTaskText: { 
     fontWeight: 'bold',
     color: '#28a745'
- },
-  
+  },
+  hiddenContainer: {
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    backgroundColor: 'red',
+    paddingRight: 15,
+    height: '100%', // Ensure it matches the task container height
+    width: '100%', // Ensure it matches the task container width
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    borderRadius: 5,
+    textAlign: 'right',
+    width: 75, // Match rightOpenValue
+    lineHeight: 45, // Match task height
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    width: 75,
+  },
 });
 
 export default App;
