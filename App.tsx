@@ -90,7 +90,7 @@ return (
 <GestureHandlerRootView>
   <SafeAreaView style={styles.container}>
     <Text style={styles.header}>Task List</Text>
-
+<View style={styles.taskListContainer}>
     {/* Task List */}
     <SwipeListView
       data={tasks}
@@ -111,6 +111,7 @@ return (
       item.id === selectedTaskId && styles.selectedTaskText,
     ]}
     >
+      
         {item.title}
       </Text>
     </View>
@@ -126,7 +127,9 @@ return (
   )}
   rightOpenValue={-75}
   disableRightSwipe={true}
+  showsVerticalScrollIndicator={false}
 />
+</View>
   {/* Floating Buttons */}  
 <View style={styles.floatingButtons}>
   {/* Add Task Button */}
@@ -171,6 +174,11 @@ const styles = StyleSheet.create({
     flex: 1, 
     padding: 20, 
     backgroundColor: '#f8f8f8',
+  },
+  taskListContainer: { 
+    flex: 1,
+    marginBottom: 145, // Space for floating buttons 
+    paddingBottom: 10, // Space between tasks and floating buttons
   },
   header: { 
     fontSize: 24, 
@@ -305,26 +313,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  // saveButton: {
-  //   backgroundColor: '#28a745',
-  //   padding: 10,
-  //   borderRadius: 5,
-  //   marginTop: 10,
-  // },
-  // saveButtonText: {
-  //   color: 'white',
-  //   fontWeight: 'bold',
-  // },
-  // cancelButton: {
-  //   backgroundColor: '#dc3545',
-  //   padding: 10,
-  //   borderRadius: 5,
-  //   marginTop: 10,
-  // },
-  // cancelButtonText: {
-  //   color: 'white',
-  //   fontWeight: 'bold',
-  // },
 });
 
 export default App;
