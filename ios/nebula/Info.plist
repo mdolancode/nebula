@@ -21,6 +21,9 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
+  <!-- AdMob Configuration -->
+  <key>GADApplicationIdentifier</key>
+  <string>ca-app-pub-8137994383219274/9346458317</string>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
